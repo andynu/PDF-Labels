@@ -42,6 +42,10 @@ module Pdf
         @@gt || self.load_template_set
         @@gt.find_all_templates
       end
+
+      def self.all_templates
+        @@gt.templates.values
+      end
   
       def self.all_barcode_fonts
         {"Code128.afm" => :translation_needed,

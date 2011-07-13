@@ -145,5 +145,16 @@ class TestPdfLabelBatch < Test::Unit::TestCase
     p = Pdf::Label::Batch.new("Avery  8160") # label is 2 x 2
     assert_equal "*HELLO123*", p.code39("hellO123")
   end
+
+  def test_label_information
+    templates = Pdf::Label::Batch.all_templates
+    assert templates.size > 0
+    t = templates.first
+    assert_equal 'Avery  3274.1', t.name
+    assert_equal 3, t.nx
+    assert_equal 3, t.ny
+    assert_equal 'US-Letter', t.size
+    assert_equal 'Square Labels', t.find_description
+  end
  
 end
