@@ -35,15 +35,21 @@ module Pdf
       end
 
       def nx
-        labels["0"].layouts.first.nx
+        first_layout ? first_layout.nx : nil 
       end
 
       def ny
-        labels["0"].layouts.first.ny
+        first_layout ? first_layout.ny : nil 
       end
 
       def find_description
         _description || description
+      end
+
+      private
+      def first_layout
+        label = labels["0"]
+        label.layouts.first if label
       end
     end
   end

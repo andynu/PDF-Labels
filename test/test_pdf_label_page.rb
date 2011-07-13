@@ -156,5 +156,12 @@ class TestPdfLabelBatch < Test::Unit::TestCase
     assert_equal 'US-Letter', t.size
     assert_equal 'Square Labels', t.find_description
   end
- 
+
+  def test_label_information_no_crash
+    Pdf::Label::Batch.all_templates.each do |t|
+      t.nx 
+      t.ny
+      t.find_description
+    end
+  end
 end
