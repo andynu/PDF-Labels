@@ -7,11 +7,10 @@ require 'pdf/writer'
 module Pdf
   module Label
     class Batch
-      attr_accessor :gt, :template, :label, :pdf, :barcode_font
+      attr_accessor :template, :label, :pdf, :barcode_font
       @@gt = nil
       def initialize(template_name, pdf_opts = {})
-        @@gt || self.class.load_template_set
-        unless @template = @@gt.find_template(template_name)
+        unless @template = gt.find_template(template_name)
           raise "Template not found!"
         end
         #if the template specifies the paper type, and the user didn't use it.
@@ -39,12 +38,11 @@ module Pdf
       end
 
       def self.all_template_names
-        @@gt || self.load_template_set
-        @@gt.find_all_templates
+        gt.find_all_templates
       end
 
       def self.all_templates
-        @@gt.templates.values
+        gt.templates.values
       end
   
       def self.all_barcode_fonts
@@ -274,7 +272,14 @@ module Pdf
         bar_text = options[:bar_text] || text
         bar_text = send(Pdf::Label::Batch.all_barcode_fonts[self.barcode_font], bar_text)
       end
-      
+
+      def self.gt
+        @@gt || self.load_template_set
+      end
+
+      def gt
+        self.class.gt 
+      end
     end
   end
 end
