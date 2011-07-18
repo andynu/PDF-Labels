@@ -77,20 +77,28 @@ class TestPdfLabelBatch < Test::Unit::TestCase
   
   def test_add_label_3_by_10_multi_page
     p = Pdf::Label::Batch.new("Avery  8160") # label is 2 x 10
+    p.draw_boxes(false, true)
     p.add_label() # should add to col 1, row 1
     p.add_label(:position => 1) # should add col 1, row 2
-    p.add_label(:text => "Positoin 15", :position => 15) # should add col 2, row 1
+    p.add_label(:text => "Position 15", :position => 15) # should add col 2, row 1
     #does the use_margin = true work?
     p.add_label(:use_margin => true, :position => 4)
     #with out the margin?
     p.add_label(:text => 'No Margin', :position => 5, :use_margin => false)
     p.add_label(:position => 48, :text => "This should be on a new page")
     p.add_label(:position => 30, :text => "This should be first a page 2")
-    p.draw_boxes(false, true)
     #TODO Anybody out there think of a better way to test this?
     p.save_as("#{ROOT}/test_add_multi_page.pdf")
   end
     
+  def test_multipage_2
+    p = Pdf::Label::Batch.new("Avery  8160") # label is 2 x 10
+    p.draw_boxes(false, true)
+    100.times do |i|
+      p.add_label(:position => i, :text => "Position #{i}") # should add col 1, row 2
+    end
+    p.save_as("#{ROOT}/test_add_multi_page2.pdf")
+  end
   
   def test_add_many_labels
     p = Pdf::Label::Batch.new("Avery  8160") # label is 2 x 10
@@ -140,7 +148,7 @@ class TestPdfLabelBatch < Test::Unit::TestCase
     end
     p.save_as("#{ROOT}/test_barcode_output.pdf")
   end
-  
+
   def test_code39
     p = Pdf::Label::Batch.new("Avery  8160") # label is 2 x 2
     assert_equal "*HELLO123*", p.code39("hellO123")

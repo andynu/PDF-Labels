@@ -109,7 +109,7 @@ module Pdf
 =begin rdoc
       To facilitate aligning a printer we give a method that prints the outlines of the labels
 =end  
-      def draw_boxes(write_coord = true, draw_markups = true)
+      def do_draw_boxes(write_coord = true, draw_markups = true)
         @layout.nx.times do |x|
           @layout.ny.times do |y|
             box_x, box_y = get_x_y(x, y)
@@ -124,27 +124,34 @@ module Pdf
             end
 
             if draw_markups
-              @label.markupMargins.each {|margin|
+              @label.markupMargins.each do |margin|
                 size = margin.size.as_pts
                 @pdf.rounded_rectangle(box_x + size,
                                        box_y - margin.size.as_pts,
                                        @label.width.as_pts - 2*size,
                                        @label.height.as_pts - 2*size,
                                        @label.round.as_pts).stroke
-              }
-              @label.markupLines.each {|line|
+              end
+              @label.markupLines.each do |line|
                 @pdf.line(box_x + line.x1.as_pts,
                           box_y + line.y1.as_pts,
                           box_x + line.x2.as_pts,
                           box_y + line.y2.as_pts).stroke
-              }
-=begin TODO Draw cirles
-              @label.markupCircles.each {|cicle|
-                @pdf.
-=end
+              end
             end
-                                   
           end
+        end
+      end
+      
+      private :do_draw_boxes
+
+      def draw_boxes(write_coord = true, draw_markups = true)
+        pdf.open_object do |heading|
+          pdf.save_state
+          do_draw_boxes(write_coord, draw_markups)
+          pdf.restore_state
+          pdf.close_object
+          pdf.add_object(heading, :all_pages)
         end
       end
   
@@ -225,10 +232,9 @@ module Pdf
         if position = options[:position]
           # condition to handle multi-page PDF generation. If true, we're past the first page
           if position > @zero_based_labels_per_page
+            position = position % @labels_per_page
             # if remainder is zero, we're dealing with the first label of a new page
-            @pdf.new_page if ((position) % @labels_per_page) == 0
-            # Translate the position to a value between 1 and the number of labels for a given page
-            position = position - (position/@labels_per_page)*@labels_per_page
+            @pdf.new_page if position.zero?
           end    
           label_x, label_y = position_to_x_y(position)
         elsif((label_x = options[:x]) && (label_y = options[:y]))
