@@ -7,7 +7,9 @@ require 'pdf/writer'
 module Pdf
   module Label
     class Batch
-      attr_accessor :template, :label, :pdf, :barcode_font
+      attr_accessor :template, :label, :pdf, :barcode_font, :manual_new_page
+      attr_reader :labels_per_page
+
       @@gt = nil
       def initialize(template_name, pdf_opts = {})
         unless @template = gt.find_template(template_name)
@@ -234,8 +236,8 @@ module Pdf
           if position > @zero_based_labels_per_page
             position = position % @labels_per_page
             # if remainder is zero, we're dealing with the first label of a new page
-            @pdf.new_page if position.zero?
-          end    
+            @pdf.new_page if position.zero? unless manual_new_page
+          end
           label_x, label_y = position_to_x_y(position)
         elsif((label_x = options[:x]) && (label_y = options[:y]))
         else
