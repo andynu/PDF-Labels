@@ -1,4 +1,4 @@
-#--
+Ôªø#--
 # PDF::Writer for Ruby.
 #   http://rubyforge.org/projects/ruby-pdf/
 #   Copyright 2003 - 2005 Austin Ziegler.
@@ -749,7 +749,7 @@ class PDF::Writer
 
     xref = []
 
-    content = "%PDF-#{@version}\n%‚„œ”\n"
+    content = "%PDF-#{@version}\n%√¢√£√è√ì\n"
     pos = content.size
 
     objects.each do |oo|
